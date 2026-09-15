@@ -3,6 +3,7 @@
 # torchtext는 torch 2.3.x까지만 동작(개발 종료)하므로 이 조합에서는 제외했습니다.
 #
 # 설치 (이 폴더의 .venv 에만 적용):
+#   winget install Microsoft.OpenJDK.17   (konlpy용 JDK, pip로 설치 불가 / 설치 후 JAVA_HOME 확인)
 #   uv venv --python 3.11 .venv
 #   uv pip install --python .venv\Scripts\python.exe torch==2.7.1 torchvision==0.22.1 --index-url https://download.pytorch.org/whl/cu128
 #   uv pip install --python .venv\Scripts\python.exe -r requirements-windows.txt
@@ -43,6 +44,7 @@ gensim==4.3.3
 jamo==0.4.1
 nlpaug==1.1.11
 spacy==3.7.5
+en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
 
 # --- 비전 ---
 opencv-python==4.10.0.84
