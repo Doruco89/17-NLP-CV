@@ -1,0 +1,53 @@
+# torchtext 전용 보조 환경 (.venv-torchtext) — CPU 전용
+#
+# 왜 별도 환경인가:
+#   torchtext는 0.18.0에서 개발이 종료됐고, 그 휠의 C++ 확장(libtorchtext)은
+#   torch 2.3.0에 맞춰 컴파일돼 있습니다. 메인 .venv의 torch 2.7.1+cu128에
+#   --no-deps로 얹으면 import 단계에서 OSError: [WinError 127] 로 실패합니다.
+#   반대로 torch를 2.3.0으로 내리면 RTX 50 시리즈(Blackwell, sm_120)를
+#   지원하는 CUDA 빌드가 없어 GPU를 잃습니다.
+#   → 메인 .venv(GPU)는 그대로 두고, torchtext가 필요한 노트북만 이 환경의
+#     Jupyter 커널 "Python 3.11 (torchtext, CPU)" 로 전환해서 사용합니다.
+#
+# 재구축 방법:
+#   uv venv --python 3.11 .venv-torchtext
+#   uv pip install --python .venv-torchtext\Scripts\python.exe torch==2.3.0 torchvision==0.18.0 --index-url https://download.pytorch.org/whl/cpu
+#   uv pip install --python .venv-torchtext\Scripts\python.exe -r requirements-torchtext.txt
+#   .venv-torchtext\Scripts\python.exe -m ipykernel install --user --name nlpcv-torchtext --display-name "Python 3.11 (torchtext, CPU)"
+#
+# 사용 시 경고 끄기:
+#   import torchtext; torchtext.disable_torchtext_deprecation_warning()
+
+#
+# [2026-09-16 추가] 이 환경의 한계 — Multi30k 는 여기서도 못 씁니다.
+#   torchdata 0.7.1 이 torch 2.3.0 에서 삭제된 DILL_AVAILABLE 을 import 해서
+#   `from torchtext.datasets import Multi30k` 호출 시 ImportError 로 죽습니다.
+#   살아있는 건 torchtext.vocab 과 torchtext.data.utils 뿐입니다.
+#   → 7장 번역 실습은 메인 .venv(GPU) + torchtext_compat/torchtext 쪽을 쓰세요.
+#     자세한 내용은 torchtext_compat/README.md
+
+# --- 파이토치 스택 (torch / torchvision 은 위 CPU 인덱스 명령으로 먼저 설치) ---
+numpy<2
+torch==2.3.0
+torchvision==0.18.0
+torchtext==0.18.0
+torchdata==0.7.1
+torchinfo==1.8.0
+portalocker
+
+# --- 데이터 / 학습 ---
+scipy<1.14
+pandas==2.2.2
+matplotlib==3.9.2
+scikit-learn==1.5.2
+
+# --- NLP ---
+nltk==3.9.1
+spacy==3.7.5
+en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+Korpora==0.2.0
+konlpy==0.6.0
+
+# --- 노트북 ---
+ipykernel
+ipywidgets

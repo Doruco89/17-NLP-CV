@@ -1,7 +1,9 @@
 *.zip
-data/
+/data/
 .venv/
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
 models/
+.venv-torchtext/
+.vscode/

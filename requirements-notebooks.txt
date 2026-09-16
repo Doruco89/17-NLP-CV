@@ -1,0 +1,65 @@
+# 00_venv_setting.ipynb ~ 05_Transformer(책7장).ipynb 에서 실제로 import 하는 패키지만 모은 목록입니다.
+# 버전은 현재 .venv 에 설치되어 동작이 확인된 것과 동일하게 고정했습니다.
+# (requirements-windows.txt 는 책 전체(비전/서빙 포함)용이고, 이 파일은 지금 노트북 전용입니다.)
+#
+# 아래 주석의 노트북 표기는 실제 파일명 기준입니다:
+#   00 = 00_venv_setting            01 = 01_파이토치_기초
+#   02 = 02_파이토치_심화            03 = 03_토큰화(책5장)
+#   04_01 = 04_01_Embdding(책6장)    04_02 = 04_02_
+#   04_03 = 04_03_합성곱신경망활용    05 = 05_Transformer(책7장)
+#
+# 설치 (Windows + RTX 50 시리즈 + Python 3.11):
+#   uv venv --python 3.11 .venv
+#   uv pip install --python .venv\Scripts\python.exe torch==2.7.1 --index-url https://download.pytorch.org/whl/cu128
+#   uv pip install --python .venv\Scripts\python.exe -r requirements-notebooks.txt
+#
+# 주의:
+#   - konlpy 는 JDK(자바) 설치 + JAVA_HOME 설정이 따로 필요합니다.
+#   - nltk 데이터(punkt, punkt_tab, averaged_perceptron_tagger[_eng], wordnet, omw-1.4)는
+#     노트북 안의 nltk.download(...) 셀에서 받습니다.
+#   - 05 는 현재 위치 인코딩 셀까지만 작성돼 있습니다. 앞으로 Multi30k 독→영 번역
+#     실습을 붙일 때 진짜 torchtext 대신 이 저장소의 torchtext_compat/ 을 쓸 예정이라,
+#     torchtext 는 여기 넣지 않습니다(torch 2.7 에서 import 불가).
+#     그 실습을 위해 미리 넣어둔 항목은 de_core_news_sm 하나입니다(아직 어느 노트북도 쓰지 않음).
+#     진짜 torchtext 가 필요하면 requirements-torchtext.txt / .venv-torchtext 를 쓰세요.
+
+# --- 파이토치 (위 --index-url cu128 명령으로 먼저 설치) ---  00~05 전부
+torch==2.7.1
+
+# --- 수치/데이터 ---
+numpy==1.26.4          # 01, 02, 03, 04_01~03
+pandas==2.2.2          # 01, 02, 03, 04_01~03
+scipy==1.13.1          # 직접 import 는 없음. gensim 4.3.3 이 scipy<1.14 를 요구
+scikit-learn==1.5.2    # 04_01: sklearn.manifold TSNE 등
+matplotlib==3.9.2      # 00, 01, 02, 03, 05(위치 인코딩 시각화)
+tabulate==0.10.0       # 04_01~03: df.to_markdown() 이 내부적으로 사용
+
+# --- 한국어 전처리 ---
+konlpy==0.6.0          # 03, 04_01~03: Okt/Kkma 등 (JDK 필요)
+JPype1==1.7.1          # konlpy 가 내부적으로 사용하는 JVM 브리지
+Korpora==0.2.0         # 03, 04_01~03: nsmc / korean_petitions / kornli 코퍼스
+jamo==0.4.1            # 03: 한글 자모 분해
+
+# --- 토크나이저 / 임베딩 ---
+nltk==3.9.1            # 02, 03, 04_01
+sentencepiece==0.2.0   # 03: SentencePieceTrainer
+tokenizers==0.19.1     # 03: WordPiece 학습
+gensim==4.3.3          # 04_01~03: Word2Vec / FastText
+spacy==3.7.5           # 03: en_core_web_sm 토크나이저
+click==8.5.0           # spacy CLI 가 요구하지만 의존성에 빠져 있어 명시
+
+# spaCy 모델
+en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+# de_core_news_sm 은 아직 미사용 — 05 의 Multi30k 독→영 번역 실습용 선반영
+de_core_news_sm @ https://github.com/explosion/spacy-models/releases/download/de_core_news_sm-3.7.0/de_core_news_sm-3.7.0-py3-none-any.whl
+
+# --- 데이터 증강 ---  02
+nlpaug==1.1.11
+transformers==4.44.2   # nlpaug ContextualWordEmbsAug / BackTranslationAug
+sacremoses==0.1.1      # 역번역(Marian MT) 토크나이저
+tqdm==4.70.1
+
+# --- 노트북 실행 환경 ---
+jupyter==1.1.1
+ipykernel==7.3.0
+ipywidgets==8.1.9
